@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+require 'arxutils'
+require 'everythingop/everythingop'
+require 'pathname'
+
+dbconfig = Arxutils::Dbutil::DBCONFIG_MYSQL
+dbconfig = Arxutils::Dbutil::DBCONFIG_SQLITE3
+
+hs = {
+  "db_dir" => Arxutils::Dbutil::DB_DIR,
+  "migrate_dir" => Arxutils::Dbutil::MIGRATE_DIR,
+  "config_dir" => Arxutils::Dbutil::CONFIG_DIR,
+  "dbconfig" => dbconfig,
+  "log_fname" => Arxutils::Dbutil::DATABASELOG,
+}
+
+
+
+def pathname_test(pa)
+#  pa_escaped = add_escape(pa)
+  pa_escaped = pa
+  pn = Pathname(pa_escaped)
+  p pn
+  p pn.to_s
+  puts pn.expand_path
+  puts pn.exist?
+  puts pn.mtime
+  puts pn.file?
+end
+
+fname = ARGV[0]
+eto = Everythingop::Everythingop.new( :db, hs, fname )
+
+#eto.group[nil].map{|x| puts x }
+#eto.group.map{|x| t = x[0] ? %Q!#{x[0]}! : "";  puts t + "|" + %Q!#{x[1].size}! }
+#eto.group[nil].map {|x| puts x } if eto.group[nil]
+
+=begin
+puts "====="
+hs={}
+eto.group_v_ext2.map {|x|
+  k = x[0]
+  v = x[1]
+  vx = []
+  vx = v.select{|path|
+    pn = Pathname.new(path)
+    pn.directory?
+  }
+  hs[k] = v
+}
+=end
+
+eto.list_category
+eto.list_repo
+eto.list_repo_desc
+eto.ensure_invalid

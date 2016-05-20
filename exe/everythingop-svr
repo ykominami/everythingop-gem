@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+require 'arxutils'
+require 'everythingop/dbutil/x'
+require 'pathname'
+require 'sinatra'
+
+configure do
+    # set :public_folder, File.dirname(__FILE__) + '/your_custom_location'
+end
+
+before do
+  dbconfig = Arxutils::Dbutil::DBCONFIG_MYSQL
+  dbconfig = Arxutils::Dbutil::DBCONFIG_SQLITE3
+  
+  hs = {
+    "db_dir" => Arxutils::Dbutil::DB_DIR,
+    "migrate_dir" => Arxutils::Dbutil::MIGRATE_DIR,
+    "config_dir" => Arxutils::Dbutil::CONFIG_DIR,
+    "dbconfig" => dbconfig,
+    "log_fname" => Arxutils::Dbutil::DATABASELOG,
+  }
+  fname = ARGV[0]
+  eto = Everythingop::Dbutil::Everythingop.new( :db, hs, fname )
+end
+
+get '/' do
+  erb :index
+end
+
+get '/category' do
+  "category"
+  #eto.list_category
+end
+
+get '/repo' do
+  #  eto.list_repo
+end
+
+get '/halt' do
+  halt 500
+end
+
+#eto.list_repo_desc
+#eto.ensure_invalid
+
+__END__
+
+@@index
+
+<!DOCTYPE html>
+          <html>
+          <head>
+          <meta charset="UTF-8">
+                        <title>Inline template</title>
+</head>
+                                      <body>
+                                      <h1>Worked!</h1>
+</body>
+                                      </html>
