@@ -7,7 +7,7 @@ require 'pathname'
 require 'sinatra'
 
 configure do
-    # set :public_folder, File.dirname(__FILE__) + '/your_custom_location'
+#    set :public_folder, File.dirname(__FILE__) + '/public'
 end
 
 before do
@@ -22,11 +22,21 @@ before do
     "log_fname" => Arxutils::Dbutil::DATABASELOG,
   }
   fname = ARGV[0]
-  eto = Everythingop::Dbutil::Everythingop.new( :db, hs, fname )
+#  eto = Everythingop::Dbutil::Everythingop.new( :db, hs, fname )
 end
 
 get '/' do
   erb :index
+end
+
+get '/index5.html' do
+  erb :index5
+end
+
+get '/jsondatax.js' do
+  @jsonDataX = Everythingop::Dbutil::A.make_jsondata
+  headers "Content-Type" => "text/javascript"
+  erb :jsondata
 end
 
 get '/category' do
@@ -40,6 +50,20 @@ end
 
 get '/halt' do
   halt 500
+end
+
+post '/getfolders' , provides: :json do
+data = request.body.read
+#  request
+  #  params = JSON.parse( request.body.read )
+#  JSON.parse( request.body.read )
+puts data
+hs = JSON.parse( data )
+JSON.dump( hs )
+#hs.keys.first.to_s
+#hs.class.to_s
+#data
+#  p params
 end
 
 #eto.list_repo_desc
@@ -59,3 +83,35 @@ __END__
                                       <h1>Worked!</h1>
 </body>
                                       </html>
+
+@@index5
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>jsTree test</title>
+    <link rel="stylesheet" type="text/css" href="jstree/dist/themes/default/style.min.css" />
+    <script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="jstree/dist/jstree.min.js"></script>
+    <script type="text/javascript" src="jsondatax.js"></script>
+    <script type="text/javascript" src="jst5.js"></script>
+
+  </head>
+  <body>
+    <!--[if lte IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <div id="boxA">
+      <div id="jstree"></div>
+    </div>
+    <button id="clear" value="clear">clear</button>
+    <button id="btn2" value="2">2</button>
+    <button id="btn3" value="3">3</button>
+    <button id="btn4" value="4">4</button>
+    <button id="btn5" value="5">5</button>
+    <p></p>
+
+  </body>
+</html>
+
+@@jsondata
+    jsonDataX = <%= @jsonDataX %>
+

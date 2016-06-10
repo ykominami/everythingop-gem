@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
 #  spec.add_dependency "arxutils"
   spec.add_dependency "sinatra"
+  spec.add_dependency "rugged"
 end
