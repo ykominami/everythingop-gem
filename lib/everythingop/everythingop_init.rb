@@ -7,6 +7,8 @@ module Everythingop
           %s!/git-sdk-64! => %q!C:\git-sdk-64!,
       %s!/stack_root! =>
 %q!C:\stack_root!,
+      %s!/stack_root/1! =>
+%q!C:\stack_root/1!,
       %s!/Users_kominami_.emacs.d! =>
 %q!C:\Users\kominami\.emacs.d!,
       %s!/Users_kominami_AppData! =>

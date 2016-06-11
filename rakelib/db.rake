@@ -48,6 +48,10 @@ task :migrate do
       :plural => "categories",
       :relation => [
         %Q!has_many :repos!,
+        #        %Q!has_many :categoryhiers, foreign_key: 'child_id'!,
+        %Q!has_one :categoryhiers, foreign_key: 'child_id'!, 
+        %Q!has_many :child_categories, through: :categoryhiers, source:  :child!,
+        %Q!has_one  :parent_category,  through: :categoryhiers, source:  :parent!,
       ]
     },
 
@@ -63,24 +67,11 @@ task :migrate do
       ],
       :plural => "categoryhiers",
       :relation => [
-        %Q!belongs_to :category , foreign_key: 'parent_id'!,
-        %Q!belongs_to :category , foreign_key: 'child_id'!,
+        %Q!belongs_to :parent , class_name: 'Category' , foreign_key: 'parent_id'!,
+        %Q!belongs_to :child  , class_name: 'Category' , foreign_key: 'child_id'!,
       ],
     },
     
-    {
-      :flist => %W!noitem!,
-      :classname => "Management",
-      :classname_downcase => "management",
-
-      :items => [
-
-        ["ctime" , "int", "false"],
-        ["mtime" , "int", "false"],
-      ],
-      :plural => "managements",
-    },
-
     {
       :flist => %W!noitem!,
       :classname => "Criteria",

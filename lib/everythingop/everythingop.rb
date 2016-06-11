@@ -11,7 +11,9 @@ module Everythingop
     extend Forwardable
     include Arxutils
     
-    def_delegator( :@hierop , :register, :register_categoryhier )
+    def_delegator( :@hierop , :register , :register_categoryhier )
+    def_delegator( :@hierop , :delete   , :unregister_categoryhier )
+    def_delegator( :@hierop , :move     , :move_categoryhier )
 
     attr_reader :group , :group_v_ext2
 
@@ -131,7 +133,7 @@ module Everythingop
         delete_keys( @group_criteria_re , exclude )
         
         @group = grouping( @lines , @group_criteria_re )
-        @group.select{|x| x[0] != nil }.map{ |x|
+        @group.select{|x| x != nil and x[0] != nil }.map{ |x|
           current_category = Currentcategory.find_by( name: x[0].to_s )
           if current_category
             x[1].each do |l|
@@ -174,15 +176,13 @@ module Everythingop
     end
 
     def list_category
+      cur = Currentcategory.where( hier: "/stack_root/1" ).first
+      p cur
+      cc = cur.category
+      p cc
+      ccc = cc.parent_category.first
+      p ccc
       Currentcategory.pluck( :name , :path , :path )
-=begin      
-      categories = Currentcategory.pluck(:name)
-      if categories.size > 0
-        Category.find( categories )
-      else
-        []
-      end
-=end
     end
 
     def list_repo
@@ -196,6 +196,16 @@ module Everythingop
       end
     end
 
+    def invalidate_category( name )
+      id = nil
+      id = Currentcategory.where( name: name ).pluck( :org_id ).first
+      if id
+        Invalidcategory.create( org_id: id , count_id: @count.id )
+        unregister_categoryhier( name )
+      end
+      id
+    end
+    
     def ensure_invalid
       invalid_ids = Currentrepo.pluck(:org_id) - @tsg.repo.ids
       invalid_ids.map{|x|
@@ -205,6 +215,7 @@ module Everythingop
       invalid_ids = Currentcategory.pluck(:org_id) - @tsg.category.ids
       invalid_ids.map{|x|
         Invalidcategory.create( org_id: x , count_id: @count.id )
+        unregister_category( Category.find( x ).hier )
       }
     end
 
@@ -268,7 +279,6 @@ module Everythingop
         begin
           category = Category.create( hs )
           category_id = category.id
-        #        category.save
         rescue => ex
           p "In register_category"
           p ex.class
@@ -289,7 +299,6 @@ module Everythingop
         end
         if hs.size > 0
           current_category.category.update(  hs )
-          #          category.save
         end
       end
       if category_id
@@ -344,6 +353,5 @@ module Everythingop
         register_categoryhier( x )
       }
     end
-    
   end
 end

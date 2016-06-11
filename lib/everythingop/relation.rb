@@ -20,6 +20,9 @@ module Everythingop
 
   class Category < ActiveRecord::Base
     has_many :repos
+    has_one :categoryhiers, foreign_key: 'child_id'
+    has_many :child_categories, through: :categoryhiers, source:  :child
+    has_one  :parent_category,  through: :categoryhiers, source:  :parent
   end
 
   class Invalidcategory < ActiveRecord::Base
@@ -32,11 +35,8 @@ module Everythingop
   end  
 
   class Categoryhier < ActiveRecord::Base
-    belongs_to :category , foreign_key: 'parent_id'
-    belongs_to :category , foreign_key: 'child_id'
-  end
-
-  class Management < ActiveRecord::Base
+    belongs_to :parent , class_name: 'Category' , foreign_key: 'parent_id'
+    belongs_to :child  , class_name: 'Category' , foreign_key: 'child_id'
   end
 
   class Criteria < ActiveRecord::Base
