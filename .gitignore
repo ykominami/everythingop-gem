@@ -47,3 +47,5 @@
 /db/database.log
 /db/production.sqlite3
 /exe/everythingop-svr
+/production.sqlite3
+
