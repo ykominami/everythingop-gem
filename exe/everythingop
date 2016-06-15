@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
-
 require 'arxutils'
 require 'everythingop/everythingop'
 require 'pathname'
@@ -35,14 +34,7 @@ mode = ARGV[1].to_sym
 eto = Everythingop::Everythingop.new( :db, hs, fname )
 
 eto.set_mode( mode )
-eto.reorder_category
-eto.set_categoryhier
-puts "== list_category"
-#eto.list_category.map{|x| p x }
-eto.list_category
-puts "== list_repo"
-#eto.list_repo.map{|x| p x}
-eto.list_repo
+eto.reset_hieritem_in_repo
 
 # puts mode
 case  mode

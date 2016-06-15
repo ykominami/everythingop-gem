@@ -54,10 +54,9 @@ module Everythingop
         }
         @group_criteria_external = %q{C:\Program Files (x86)\Microsoft Visual Studio 14.0}
 
-        @category_exclude_hs = {
-          %s!/FileHistory! =>
-%q!Z:\FileHistory!
-        }
+        @category_exclude_ary = [
+          %s!/FileHistory!
+        ]
       
         @v_ext2_git_top_symbol = %s!/ext2/git!
 
@@ -195,6 +194,11 @@ module Everythingop
         %s!/ext2/git/tmp!=>
 %q!V:\ext2\tmp!
         }
+        @z_hier = [ %W!/a /b /c /d /d/1 /d/2 /d/3 /b/A!,
+                    %W!/e /f /g /h /h/1 /h/2 /h/3 /f/E!,
+                    %W!/i /j /k /l /l/1 /l/2 /l/3 /j/I!,
+                  ]
+        
       end
     end
 end

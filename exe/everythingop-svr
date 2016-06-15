@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
-
 require 'arxutils'
-require 'everythingop/dbutil/x'
+require 'everythingop/everythingop'
 require 'pathname'
 require 'sinatra'
 
@@ -22,7 +21,9 @@ before do
     "log_fname" => Arxutils::Dbutil::DATABASELOG,
   }
   fname = ARGV[0]
-#  eto = Everythingop::Dbutil::Everythingop.new( :db, hs, fname )
+  @mode = ARGV[1].to_sym
+  @eto = Everythingop::Everythingop.new( :db, hs, fname )
+  @eto.set_mode( @mode )
 end
 
 get '/' do
@@ -33,10 +34,10 @@ get '/index5.html' do
   erb :index5
 end
 
-get '/jsondatax.js' do
-  @jsonDataX = Everythingop::Dbutil::A.make_jsondata
-  headers "Content-Type" => "text/javascript"
-  erb :jsondata
+get '/jsonData5.json' do
+  data = @eto.get_category_hier_jsondata
+  headers "Content-Type" => "application/json"
+  data
 end
 
 get '/category' do
@@ -52,22 +53,6 @@ get '/halt' do
   halt 500
 end
 
-post '/getfolders' , provides: :json do
-data = request.body.read
-#  request
-  #  params = JSON.parse( request.body.read )
-#  JSON.parse( request.body.read )
-puts data
-hs = JSON.parse( data )
-JSON.dump( hs )
-#hs.keys.first.to_s
-#hs.class.to_s
-#data
-#  p params
-end
-
-#eto.list_repo_desc
-#eto.ensure_invalid
 
 __END__
 

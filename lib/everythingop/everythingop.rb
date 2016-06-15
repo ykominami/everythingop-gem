@@ -5,6 +5,7 @@ require 'everythingop/relation'
 require 'everythingop/everythingop_init'
 require 'pathname'
 require 'pp'
+require 'csv'
 
 module Everythingop
   class Everythingop
@@ -18,7 +19,18 @@ module Everythingop
     attr_reader :group , :group_v_ext2
 
     def initialize( kind, hs , fname = nil)
-      @tsg = TransactStateGroup.new( :category , :repo )
+      @hierop = HierOp.new( :hier , Category , Categoryhier, Currentcategory )
+      @hieritem ||= Struct.new( "Hieritem" , :field_name, :hier_name , :base_asoc_name , :base_klass , :hier_klass, :cur_klass , :op_inst )
+      @hieritem_ary = [
+        @hieritem.new( "hier1item_id", :hier , "hier1item" , Hier1item , Hier1, Currenthier1item ),
+        @hieritem.new( "hier2item_id", :hier , "hier2item" , Hier2item , Hier2, Currenthier2item ),
+        @hieritem.new( "hier3item_id", :hier , "hier3item" , Hier3item , Hier3, Currenthier3item )
+      ]
+      @hieritem_ary.map{ |x| x.op_inst = HierOp.new( x.hier_name, x.base_klass , x.hier_klass, x.cur_klass ) }
+      @hieritem_hs = @hieritem_ary.reduce({}){ |s,x|
+      }
+
+      @tsg = TransactStateGroup.new( :category , :repo , :hier1item, :hier2item, :hier3item )
       if fname
         @fname = fname
         @lines = File.readlines( @fname ).map{|x| x.strip }.shift(3000)
@@ -32,11 +44,13 @@ module Everythingop
       @group_criteria = nil
       @group_criteria_external = nil
       @group_criteria_v_ext2 = nil
+      
+
+      @repo_ary = []
       variable_init
     end
 
     def set_mode( mode = :MIXED_MODE )
-      @hierop = HierOp.new( :hier , Category , Categoryhier, Currentcategory )
       @mode = mode
       # :TRACE_MODE
       # :ADD_ONLY_MODE
@@ -68,17 +82,39 @@ module Everythingop
       end
       group_criteria
     end
+
+    def reorder_hier
+      @hieritem_ary.zip( @z_hier ).map{|x|
+        hi = x[0]
+        data = x[1]
+
+        hs_count = hi.hier_klass.group(:parent_id).count(:parent_id)
+        if hs_count.size == 0
+          data.map{ |name|
+            register_hieritem( hi , name )
+          }
+          hi.cur_klass.pluck(:hier).map{ |y|
+            hi.op_inst.register( y )
+          }
+          hs_count = hi.hier_klass.group(:parent_id).count(:parent_id)
+        end
+        hs_count.keys.reduce({}){ |hs, x|
+          hs[x] = Category.find( Categoryhier.where( parent_id: x ).pluck( :child_id ) )
+          hs
+        }
+      }
+    end
     
     def reorder_category
       hs_count = Categoryhier.group(:parent_id).count(:parent_id)
 
-      @category_hs_by_parent_id = hs_count.keys.reduce({}){ |hs, x|
+      category_hs_by_parent_id = hs_count.keys.reduce({}){ |hs, x|
         hs[x] = Category.find( Categoryhier.where( parent_id: x ).pluck( :child_id ) )
         hs
       }
 
       # parent_idが0のもの
-      category_group_by_parent = @category_hs_by_parent_id.group_by{ |x| x[0] == 1 ? :one : :not_one }
+      category_group_by_parent = category_hs_by_parent_id.group_by{ |x| x[0] == 1 ? :one : :not_one }
 
       @group_criteria = restore_criteria( @group_criteria , 1 )
       tmp, tmp2, @v_ext2_git_top_category_id = [
@@ -104,7 +140,6 @@ module Everythingop
       if category_group_by_parent[:one] and category_group_by_parent[:one].size > 0
         ary = category_group_by_parent[:one].first[1]
 
-        # ary[0]は1、ary[1]はCategoryのインスタンスの配列
         db_hs = ary.reduce({}){ |s,x|
           s.update( x.hier.to_sym => x )
         }
@@ -126,11 +161,11 @@ module Everythingop
       }
     end
     
-    #====================================================      
     def get_all_repo
       unless @group
-        exclude = @category_exclude_hs.keys.map{|x| x }
-        delete_keys( @group_criteria_re , exclude )
+        @category_exclude_ary.map{ |key| 
+          @group_criteria_re.delete(key)
+        }
         
         @group = grouping( @lines , @group_criteria_re )
         @group.select{|x| x != nil and x[0] != nil }.map{ |x|
@@ -148,6 +183,8 @@ module Everythingop
               end
             end
           end
+
+          set_hier
         }
       end
       
@@ -158,7 +195,7 @@ module Everythingop
         @group_v_ext2.select{ |x| x != nil and x[0] != nil }.map{ |x|
           current_category = Currentcategory.find_by( name: x[0].to_s )
           if current_category
-            x[1].each do |l|
+            x[1].each { |l|
               pn = Pathname.new(l)
               begin
                 pn.mtime
@@ -169,7 +206,7 @@ module Everythingop
                 p current_category
                 p l
               end
-            end
+            }
           end
         }
       end
@@ -177,15 +214,12 @@ module Everythingop
 
     def list_category
       cur = Currentcategory.where( hier: "/stack_root/1" ).first
-      p cur
-      cc = cur.category
-      p cc
-      ccc = cc.parent_category.first
-      p ccc
+      ch = Categoryhier.find_by( child_id: cur.category.id )
+      
       Currentcategory.pluck( :name , :path , :path )
     end
-
-    def list_repo
+    
+    def list_repo_1
       get_all_repo
       
       repos = Currentrepo.pluck(:org_id)
@@ -193,6 +227,176 @@ module Everythingop
         Repo.find( repos )
       else
         []
+      end
+    end
+
+    def list_repo_2
+      get_all_repo
+      
+      Currentcategory.all.map{ |x|
+        category = x.category
+        puts category.name
+        category.repos.map{ |y| puts %Q! #{y.path}|#{y.desc}! }
+      }
+    end
+
+    def list_repo
+      get_all_repo
+      
+      Categoryhier.where( parent_id: @v_ext2_git_top_category_id ).pluck( :child_id ).map{ |x|
+        category = Category.find( x )
+        ary = category.repos
+        if ary.size > 0
+          puts %Q!#{category.name}!
+          ary.map{ |y|
+            puts %Q! #{y.path}|#{y.desc}!
+          }
+        end
+      }
+#      @hieritem_ary.map{ |x| list_hier( x ) }
+#      list_hierx
+    end
+
+    def unset_repo_by_path_in_hier1item( src_path  )
+      unset_repo_by_path_in_hieritem( 0 , src_path )
+    end
+    
+    def unset_repo_by_path_in_hier2item( src_path  )
+      unset_repo_by_path_in_hieritem( 1 , src_path )
+    end
+    
+    def unset_repo_by_path_in_hier3item( src_path  )
+      unset_repo_by_path_in_hieritem( 2 , src_path )
+    end
+    
+    def unset_repo_by_path_in_hieritem( num , src_path )
+      repo = Currentrepo.find_by( path: src_path ).repo
+      unset_repo_in_hieritem( num , repo )
+    end
+    
+    def unset_repo_in_hieritem( num , repo )
+      hi_info = @hieritem_ary[num]
+      if repo
+        hs = { hi_info.field_name.to_sym => nil }
+        repo.update( hs )
+      else
+        puts "Can't find #{dest_hier} in #{num}"
+      end
+    end
+    
+
+
+    def move_repo_by_path_in_hier1item_by_path( src_path , dest_hier_path )
+      move_repo_by_path_in_hieritem( 0 , srcr_path , dest_hierr_path )
+    end
+
+    def move_repo_by_path_in_hier2item_by_path( srcr_path , dest_hierr_path )
+      move_repo_by_path_in_hieritem( 1 , srcr_path , dest_hierr_path )
+    end
+
+    def move_repo_by_path_in_hier3item_by_path( srcr_path , dest_hierr_path )
+      move_repo_by_path_in_hieritem( 2 , srcr_path , dest_hierr_path )
+    end
+
+    def move_repo_by_path_in_hieritem_by_path( num , srcr_path , dest_hierr_path )
+      repo = Currentrepo.find_by( path: srcr_path ).repo
+      move_repo_in_hieritem( num , repo , dest_hierr_path )
+    end
+    
+    def move_repo_in_hieritem_by_path( num , repo , dest_hierr_path )
+      puts "dest_hier=#{dest_hierr_path}"
+      hi_info = @hieritem_ary[num]
+      hs_target = { hi_info.hier_name => dest_hierr_path }
+      hi = hi_info.cur_klass.find_by( hs_target )
+      move_repo_in_hieritem( hi_info ,  repo , hi )
+    end
+    
+    def move_repo_in_hieritem( hi_info ,  repo , hi )
+      if hi
+        hieritem = hi.__send__ hi_info.base_asoc_name
+        hs = { hi_info.field_name.to_sym => hieritem.id }
+        p hs
+        repo.update( hs )
+      else
+        puts "Can't find #{dest_hier} in #{num}"
+      end
+    end
+    
+    def move_in_hieritem( src , dest_hier )
+    end
+    
+    def list_hierx
+      hs = Currentrepo.all.reduce({}){ |s,x|
+        repo = x.repo
+        @hieritem_ary.map{ |y|
+          sym = y.base_asoc_name.to_sym
+          s[ sym ] ||= {}
+          hieritem = repo.__send__ y.base_asoc_name
+          s[ sym ][ hieritem ] ||= []
+          s[ sym ][ hieritem ] << repo
+        }
+        s
+      }
+      @hieritem_ary.map{ |y|
+        sym = y.base_asoc_name.to_sym
+        p sym
+        hs[ sym ].keys.sort_by{ |a,b|
+          if a != nil
+            if b != nil
+              a.hier <=> b.hier
+            else
+              1
+            end
+          else
+            if b != nil
+              -1
+            else
+              0
+            end
+          end
+        }.map{ |z|
+          if z
+            puts z.__send__ y.hier_name
+          else
+            puts "nil"
+          end
+          hs[ sym ][ z ].map{ |a|
+            puts %Q!  #{a.path}|#{a.desc}!
+          }
+        }
+        puts ""
+      }
+    end
+    
+    def list_hier_1( hieritem )
+      hieritem.cur_klass.all.order( :hier ).select{ |x|
+        (x.__send__ hieritem.base_asoc_name).repos.size > 0
+      }.map{ |x|
+        hi = x.__send__ hieritem.base_asoc_name
+        puts %Q!#{hi.hier}!
+        hi.repos.map{ |y|
+          puts %Q! #{y.path}|#{y.desc}!
+        }
+      }
+      puts ""
+    end
+
+    def list_hier( hieritem )
+      ary = hieritem.cur_klass.all.order( :hier ).reduce([]){ |s,x|
+        hi = (x.__send__ hieritem.base_asoc_name)
+        s << [ hi, hi.repos ] if hi.repos.size > 0
+        s
+      }
+      if ary.size > 0
+        puts %Q!* #{hieritem.base_asoc_name}!
+        ary.map{ |x|
+          hi , repos , tmp = x
+          puts %Q!#{hi.hier}!
+          repos.map{ |y|
+            puts %Q! #{y.path}|#{y.desc}!
+          }
+        }
+        puts ""
       end
     end
 
@@ -205,7 +409,7 @@ module Everythingop
       end
       id
     end
-    
+
     def ensure_invalid
       invalid_ids = Currentrepo.pluck(:org_id) - @tsg.repo.ids
       invalid_ids.map{|x|
@@ -225,6 +429,46 @@ module Everythingop
       end
     end
 
+    def save_repo
+      fname = "repo.tsv"
+      header = ["id","category_id","desc","path","mtime","ctime","hier1item_id","hier2item_id","hier3item_id","created_at","updated_at"]
+      CSV.open( fname , "w" , {:col_sep => "\t" , :headers => header} ){|csv|
+        @repo_ary.map{|x| csv << x}
+      }
+    end
+    
+    def set_hier
+      Currentrepo.all.reduce( 1 ){ |s,x|
+        hs = { :hier1item_id => s , :hier2item_id => (s+1), :hier3item_id => (s+2) }
+        p hs
+        x.repo.update( hs )
+        (s + 3)
+      }
+    end
+
+    def reset_hieritem_in_repo
+      Repo.all.map{ |x|
+        hs = @hieritem_ary.reduce({}){ |s,y|
+          s[ y.base_asoc_name.to_sym ] = nil
+          s
+        }
+        x.update( hs )
+      }
+    end
+
+    def get_category_hier_jsondata
+      JSON( Categoryhier.pluck( :parent_id , :child_id , :level ).map{ |ary|
+              text = Category.find( ary[1] ).hier.split("/").pop
+              if ary[2] == 0
+                parent_id = "#"
+              else
+                parent_id = %Q!#{ary[0]}!
+              end
+              child_id = %Q!#{ary[1]}!
+        { "id" => child_id , "parent" => parent_id , "text" => text }
+      } )
+    end
+    
     private
 
     def get_lines
@@ -236,7 +480,7 @@ module Everythingop
       end
       ary
     end
-    
+
     def make_group_criteria( hs_base , db_hs )
       keys_in_db_only = db_hs.keys - hs_base.keys
 
@@ -253,7 +497,7 @@ module Everythingop
       }
       hs1.merge( hs2 )
     end
-    
+
     def grouping( data , group_criteria_re )
       data.group_by{ |x|
         obj = group_criteria_re.find{ |c|
@@ -307,26 +551,52 @@ module Everythingop
       category_id
     end
 
+    def register_hieritem( hieritem, hier )
+      id = nil
+      hs = { hieritem.hier_name => hier }
+      cur = hieritem.cur_klass.find_by( hs )
+      if cur == nil 
+        begin
+          item = hieritem.base_klass.create( hs )
+          id = item.id
+        rescue => ex
+          p "In register_hier"
+          p ex.class
+          p ex.message
+          pp ex.backtrace
+          exit
+
+          id = nil
+        end
+      else
+        met = hieritem.base_asoc_name
+        id = (cur.__send__ met).id
+      end
+      if id
+        met = hieritem.base_asoc_name
+        (@tsg.__send__  met).add( id )
+      end
+      id
+    end
+
     def ensure_categoryhier
       Category.pluck(:hier).map{|x|
         register_categoryhier( x )
       }
     end
-    
-    def delete_keys( hs , keys )
-      keys.map{ |key| 
-        hs.delete(key)
-      }
-    end
-    
+
     def register_repo_without_desc( category_id , path , mtime, ctime )
       repo_id = nil
       current_repo = Currentrepo.find_by( path: path )
       if current_repo == nil
         begin
           hs = { category_id: category_id , path: path , mtime: mtime , ctime: ctime }
-          repo = Repo.create( hs )
-          repo_id = repo.id
+          # ["id","category_id","desc","path","mtime","ctime","hier1item_id","hier2item_id","hier3item_id","created_at","updated_at"]
+          repo_id = @repo_ary.size + 1
+          time="2016-06-12 03:55:47"
+          @repo_ary << [repo_id , category_id , path, mtime, ctime, nil, nil, nil, time, time]
+#          repo = Repo.create( hs )
+#          repo_id = repo.id
         rescue => ex
           p ex.class
           p ex.message

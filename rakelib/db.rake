@@ -28,10 +28,16 @@ task :migrate do
         ["path" , "string", "false"],
         ["mtime" , "int", "false"],
         ["ctime" , "int", "false"],
+        ["hier1item_id" , "integer", "true"],
+        ["hier2item_id" , "integer", "true"],
+        ["hier3item_id" , "integer", "true"],
       ],
       :plural => "repos",
       :relation => [
         %Q!belongs_to :category , foreign_key: 'category_id'!,
+        %Q!belongs_to :hier1item , foreign_key: 'hier1item_id'!,
+        %Q!belongs_to :hier2item , foreign_key: 'hier2item_id'!,
+        %Q!belongs_to :hier3item , foreign_key: 'hier3item_id'!,
       ],
     },
 
@@ -48,10 +54,6 @@ task :migrate do
       :plural => "categories",
       :relation => [
         %Q!has_many :repos!,
-        #        %Q!has_many :categoryhiers, foreign_key: 'child_id'!,
-        %Q!has_one :categoryhiers, foreign_key: 'child_id'!, 
-        %Q!has_many :child_categories, through: :categoryhiers, source:  :child!,
-        %Q!has_one  :parent_category,  through: :categoryhiers, source:  :parent!,
       ]
     },
 
@@ -78,12 +80,104 @@ task :migrate do
       :classname_downcase => "criteria",
 
       :items => [
-
         ["level" , "int",    "true"],
         ["key"   , "string", "false"],
         ["value" , "string", "false"],
       ],
       :plural => "criteria",
+    },
+
+    {
+      :flist => %W!base invalid current!,
+      :classname => "Hier1item",
+      :classname_downcase => "hier1item",
+
+      :items => [
+        ["hier" , "string", "false"],
+      ],
+      :plural => "hier1items",
+      :relation => [
+        %Q!has_many :repos!,
+      ]
+    },
+
+    {
+      :flist => %W!base invalid current!,
+      :classname => "Hier2item",
+      :classname_downcase => "hier2item",
+
+      :items => [
+        ["hier" , "string", "false"],
+      ],
+      :plural => "hier2items",
+      :relation => [
+        %Q!has_many :repos!,
+      ]
+    },
+
+    {
+      :flist => %W!base invalid current!,
+      :classname => "Hier3item",
+      :classname_downcase => "hier3item",
+
+      :items => [
+        ["hier" , "string", "false"],
+      ],
+      :plural => "hier3items",
+      :relation => [
+        %Q!has_many :repos!,
+      ]
+    },
+
+    {
+      :flist => %W!noitem!,
+      :classname => "Hier1",
+      :classname_downcase => "hier1",
+
+      :items => [
+        ["parent_id" , "int", "false"],
+        ["child_id"  , "int", "false"],
+        ["level"     , "int", "false"],
+      ],
+      :plural => "hier1s",
+      :relation => [
+        %Q!belongs_to :parent , class_name: 'Hier1item' , foreign_key: 'parent_id'!,
+        %Q!belongs_to :child  , class_name: 'Hier1item' , foreign_key: 'child_id'!,
+      ],
+    },
+
+    {
+      :flist => %W!noitem!,
+      :classname => "Hier2",
+      :classname_downcase => "hier2",
+
+      :items => [
+        ["parent_id" , "int", "false"],
+        ["child_id"  , "int", "false"],
+        ["level"     , "int", "false"],
+      ],
+      :plural => "hier2s",
+      :relation => [
+        %Q!belongs_to :parent , class_name: 'Hier2item' , foreign_key: 'parent_id'!,
+        %Q!belongs_to :child  , class_name: 'Hier2item' , foreign_key: 'child_id'!,
+      ],
+    },
+
+    {
+      :flist => %W!noitem!,
+      :classname => "Hier3",
+      :classname_downcase => "hier3",
+
+      :items => [
+        ["parent_id" , "int", "false"],
+        ["child_id"  , "int", "false"],
+        ["level"     , "int", "false"],
+      ],
+      :plural => "hier3s",
+      :relation => [
+        %Q!belongs_to :parent , class_name: 'Hier3item' , foreign_key: 'parent_id'!,
+        %Q!belongs_to :child  , class_name: 'Hier3item' , foreign_key: 'child_id'!,
+      ],
     },
   ]
 
