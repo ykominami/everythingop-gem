@@ -49,3 +49,13 @@
 /exe/everythingop-svr
 /production.sqlite3
 
+/db0
+/dba
+/exe/dbbk
+/exe/dbbk2
+/run_makemigrate.bat
+/run.bat
+/config
+/sql
+/txt
+/vendor
