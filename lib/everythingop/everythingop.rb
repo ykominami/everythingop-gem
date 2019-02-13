@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'arxutils'
 require 'forwardable'
+require 'everythingop/dbutil'
 require 'everythingop/everythingop_init'
 require 'pathname'
 require 'pp'
@@ -17,15 +18,15 @@ module Everythingop
 
     attr_reader :group , :group_v_ext2
 
-    def initialize( kind, hs , fname = nil)
-      @hierop = HierOp.new( :hier , Category , Categoryhier, Currentcategory )
-      @hieritem ||= Struct.new( "Hieritem" , :field_name, :hier_name , :base_asoc_name , :base_klass , :hier_klass, :cur_klass , :op_inst )
+    def initialize( kind, hs , opts, fname = nil)
+      @hierop = HierOp.new( "hier", :hier , "hier" , Dbutil::Category , Dbutil::Categoryhier, Dbutil::Currentcategory, Dbutil::Invalidcategory )
+      @hieritem ||= Struct.new( "Hieritem" , :field_name, :hier_name , :base_asoc_name , :base_klass , :hier_klass, :cur_klass , :invalid_klass, :op_inst )
       @hieritem_ary = [
-        @hieritem.new( "hier1item_id", :hier , "hier1item" , Hier1item , Hier1, Currenthier1item ),
-        @hieritem.new( "hier2item_id", :hier , "hier2item" , Hier2item , Hier2, Currenthier2item ),
-        @hieritem.new( "hier3item_id", :hier , "hier3item" , Hier3item , Hier3, Currenthier3item )
+        @hieritem.new( "hier1item_id", :hier , "hier1item" , Dbutil::Hier1item , Dbutil::Hier1, Dbutil::Currenthier1item , Dbutil::Invalidhier1item),
+        @hieritem.new( "hier2item_id", :hier , "hier2item" , Dbutil::Hier2item , Dbutil::Hier2, Dbutil::Currenthier2item , Dbutil::Invalidhier2item),
+        @hieritem.new( "hier3item_id", :hier , "hier3item" , Dbutil::Hier3item , Dbutil::Hier3, Dbutil::Currenthier3item , Dbutil::Invalidhier3item)
       ]
-      @hieritem_ary.map{ |x| x.op_inst = HierOp.new( x.hier_name, x.base_klass , x.hier_klass, x.cur_klass ) }
+      @hieritem_ary.map{ |x| x.op_inst = HierOp.new( x.field_name, x.hier_name, x.base_asoc_name, x.base_klass , x.hier_klass, x.cur_klass, x.invalid_klass ) }
       @hieritem_hs = @hieritem_ary.reduce({}){ |s,x|
       }
 
@@ -36,14 +37,20 @@ module Everythingop
       else
         @lines = get_lines.shift(3000)
       end
+
+      register_time = ::Arxutils::Dbutil::DbMgr.init( hs["db_dir"], hs["migrate_dir"] , hs["config_dir"], hs["dbconfig"] , hs["env"] , hs["log_fname"] , opts )
+
+      @dbmgr = ::Everythingop::Dbutil::EverythingopMgr.new( register_time )
+=begin
       Store.init( kind , hs ){ | register_time |
-        @count = Count.create( countdatetime: register_time )
+        @count = Dbutil::Count.create( countdatetime: register_time )
       }
+=end
       @group = nil
       @group_criteria = nil
       @group_criteria_external = nil
       @group_criteria_v_ext2 = nil
-      
+
 
       @repo_ary = []
       variable_init
@@ -70,14 +77,14 @@ module Everythingop
     end
 
     def restore_criteria( group_criteria , level )
-      criteria = Criteria.where( level: level ).all.reduce({}){ |s,x|
+      criteria = Dbutil::Criteria.where( level: level ).all.reduce({}){ |s,x|
         s[ x.key ] = x.value
         s
       }
       if criteria.size > 0
         group_criteria = criteria
       else
-        group_criteria.map{|x| Criteria.create( level: level , key: x[0], value: x[1] ) }
+        group_criteria.map{|x| Dbutil::Criteria.create( level: level , key: x[0], value: x[1] ) }
       end
       group_criteria
     end
@@ -98,17 +105,17 @@ module Everythingop
           hs_count = hi.hier_klass.group(:parent_id).count(:parent_id)
         end
         hs_count.keys.reduce({}){ |hs, x|
-          hs[x] = Category.find( Categoryhier.where( parent_id: x ).pluck( :child_id ) )
+          hs[x] = Dbutil::Category.find( Dbutil::Categoryhier.where( parent_id: x ).pluck( :child_id ) )
           hs
         }
       }
     end
     
     def reorder_category
-      hs_count = Categoryhier.group(:parent_id).count(:parent_id)
+      hs_count = Dbutil::Categoryhier.group(:parent_id).count(:parent_id)
 
       category_hs_by_parent_id = hs_count.keys.reduce({}){ |hs, x|
-        hs[x] = Category.find( Categoryhier.where( parent_id: x ).pluck( :child_id ) )
+        hs[x] = Dbutil::Category.find( Dbutil::Categoryhier.where( parent_id: x ).pluck( :child_id ) )
         hs
       }
 
@@ -128,9 +135,9 @@ module Everythingop
       
       [@group_criteria , @group_criteria_v_ext2].map{ |y|
         y.map{ |x|
-          current_category = Currentcategory.find_by( hier: x[0].to_s )
+          current_category = Dbutil::Currentcategory.find_by( hier: x[0].to_s )
           unless current_category
-            Category.create( name: x[0].to_s , path: x[1] , hier: x[0].to_s )
+            Dbutil::Category.create( name: x[0].to_s , path: x[1] , hier: x[0].to_s )
           end
         }
       }
@@ -155,7 +162,7 @@ module Everythingop
     end
     
     def set_categoryhier
-      Currentcategory.pluck(:hier).map{|x|
+      Dbutil::Currentcategory.pluck(:hier).map{|x|
         @hierop.register( x )
       }
     end
@@ -168,7 +175,7 @@ module Everythingop
         
         @group = grouping( @lines , @group_criteria_re )
         @group.select{|x| x != nil and x[0] != nil }.map{ |x|
-          current_category = Currentcategory.find_by( name: x[0].to_s )
+          current_category = Dbutil::Currentcategory.find_by( name: x[0].to_s )
           if current_category
             x[1].each do |l|
               pn = Pathname.new(l)
@@ -192,7 +199,7 @@ module Everythingop
       if data
         @group_v_ext2 = grouping( data , @group_criteria_re_v_ext2 )
         @group_v_ext2.select{ |x| x != nil and x[0] != nil }.map{ |x|
-          current_category = Currentcategory.find_by( name: x[0].to_s )
+          current_category = Dbutil::Currentcategory.find_by( name: x[0].to_s )
           if current_category
             x[1].each { |l|
               pn = Pathname.new(l)
@@ -212,18 +219,18 @@ module Everythingop
     end
 
     def list_category
-      cur = Currentcategory.where( hier: "/stack_root/1" ).first
-      ch = Categoryhier.find_by( child_id: cur.category.id )
+      cur = Dbutil::Currentcategory.where( hier: "/stack_root/1" ).first
+      ch = Dbutil::Categoryhier.find_by( child_id: cur.category.id )
       
-      Currentcategory.pluck( :name , :path , :path )
+      Dbutil::Currentcategory.pluck( :name , :path , :path )
     end
     
     def list_repo_1
       get_all_repo
       
-      repos = Currentrepo.pluck(:org_id)
+      repos = Dbutil::Currentrepo.pluck(:org_id)
       if repos.size > 0
-        Repo.find( repos )
+        Dbutil::Repo.find( repos )
       else
         []
       end
@@ -232,7 +239,7 @@ module Everythingop
     def list_repo_2
       get_all_repo
       
-      Currentcategory.all.map{ |x|
+      Dbutil::Currentcategory.all.map{ |x|
         category = x.category
         puts category.name
         category.repos.map{ |y| puts %Q! #{y.path}|#{y.desc}! }
@@ -242,8 +249,8 @@ module Everythingop
     def list_repo
       get_all_repo
       
-      Categoryhier.where( parent_id: @v_ext2_git_top_category_id ).pluck( :child_id ).map{ |x|
-        category = Category.find( x )
+      Dbutil::Categoryhier.where( parent_id: @v_ext2_git_top_category_id ).pluck( :child_id ).map{ |x|
+        category = Dbutil::Category.find( x )
         ary = category.repos
         if ary.size > 0
           puts %Q!#{category.name}!
@@ -269,7 +276,7 @@ module Everythingop
     end
     
     def unset_repo_by_path_in_hieritem( num , src_path )
-      repo = Currentrepo.find_by( path: src_path ).repo
+      repo = Dbutil::Currentrepo.find_by( path: src_path ).repo
       unset_repo_in_hieritem( num , repo )
     end
     
@@ -298,7 +305,7 @@ module Everythingop
     end
 
     def move_repo_by_path_in_hieritem_by_path( num , srcr_path , dest_hierr_path )
-      repo = Currentrepo.find_by( path: srcr_path ).repo
+      repo = Dbutil::Currentrepo.find_by( path: srcr_path ).repo
       move_repo_in_hieritem( num , repo , dest_hierr_path )
     end
     
@@ -325,7 +332,7 @@ module Everythingop
     end
     
     def list_hierx
-      hs = Currentrepo.all.reduce({}){ |s,x|
+      hs = Dbutil::Currentrepo.all.reduce({}){ |s,x|
         repo = x.repo
         @hieritem_ary.map{ |y|
           sym = y.base_asoc_name.to_sym
@@ -401,29 +408,29 @@ module Everythingop
 
     def invalidate_category( name )
       id = nil
-      id = Currentcategory.where( name: name ).pluck( :org_id ).first
+      id = Dbutil::Currentcategory.where( name: name ).pluck( :org_id ).first
       if id
-        Invalidcategory.create( org_id: id , count_id: @count.id )
+        Dbutil::Invalidcategory.create( org_id: id , count_id: @count.id )
         unregister_categoryhier( name )
       end
       id
     end
 
     def ensure_invalid
-      invalid_ids = Currentrepo.pluck(:org_id) - @tsg.repo.ids
+      invalid_ids = Dbutil::Currentrepo.pluck(:org_id) - @tsg.repo.ids
       invalid_ids.map{|x|
-        Invalidrepo.create( org_id: x , count_id: @count.id )
+        Dbutil::Invalidrepo.create( org_id: x , count_id: @count.id )
       }
 
-      invalid_ids = Currentcategory.pluck(:org_id) - @tsg.category.ids
+      invalid_ids = Dbutil::Currentcategory.pluck(:org_id) - @tsg.category.ids
       invalid_ids.map{|x|
-        Invalidcategory.create( org_id: x , count_id: @count.id )
+        Dbutil::Invalidcategory.create( org_id: x , count_id: @count.id )
         unregister_category( Category.find( x ).hier )
       }
     end
 
     def show_all_repo
-      Currentrepo.all.each do |x|
+      Dbutil::Currentrepo.all.each do |x|
         puts %Q!#{sprintf("% 4d" , x.id)}|#{x.repo.category.name}|#{x.desc}|#{x.path}|#{x.mtime}|#{x.ctime}!
       end
     end
@@ -437,7 +444,7 @@ module Everythingop
     end
     
     def set_hier
-      Currentrepo.all.reduce( 1 ){ |s,x|
+      Dbutil::Currentrepo.all.reduce( 1 ){ |s,x|
         hs = { :hier1item_id => s , :hier2item_id => (s+1), :hier3item_id => (s+2) }
         p hs
         x.repo.update( hs )
@@ -446,7 +453,7 @@ module Everythingop
     end
 
     def reset_hieritem_in_repo
-      Repo.all.map{ |x|
+      Dbutil::Repo.all.map{ |x|
         hs = @hieritem_ary.reduce({}){ |s,y|
           s[ y.base_asoc_name.to_sym ] = nil
           s
@@ -456,8 +463,8 @@ module Everythingop
     end
 
     def get_category_hier_jsondata
-      JSON( Categoryhier.pluck( :parent_id , :child_id , :level ).map{ |ary|
-              text = Category.find( ary[1] ).hier.split("/").pop
+      JSON( Dbutil::Categoryhier.pluck( :parent_id , :child_id , :level ).map{ |ary|
+              text = Dbutil::ategory.find( ary[1] ).hier.split("/").pop
               if ary[2] == 0
                 parent_id = "#"
               else
@@ -516,11 +523,11 @@ module Everythingop
 
     def register_category( category_name , path , hier )
       category_id = nil
-      current_category = Currentcategory.find_by( name: category_name )
+      current_category = Dbutil::Currentcategory.find_by( name: category_name )
       if current_category == nil 
         hs = { name: category_name , path: path , hier: hier }
         begin
-          category = Category.create( hs )
+          category = Dbutil::Category.create( hs )
           category_id = category.id
         rescue => ex
           p "In register_category"
@@ -579,14 +586,14 @@ module Everythingop
     end
 
     def ensure_categoryhier
-      Category.pluck(:hier).map{|x|
+      Dbutil::Category.pluck(:hier).map{|x|
         register_categoryhier( x )
       }
     end
 
     def register_repo_without_desc( category_id , path , mtime, ctime )
       repo_id = nil
-      current_repo = Currentrepo.find_by( path: path )
+      current_repo = Dbutil::Currentrepo.find_by( path: path )
       if current_repo == nil
         begin
           hs = { category_id: category_id , path: path , mtime: mtime , ctime: ctime }
@@ -618,7 +625,7 @@ module Everythingop
     end
 
     def ensure_categoryhier
-      Category.pluck(:name).map{|x|
+      Dbutil::Category.pluck(:name).map{|x|
         register_categoryhier( x )
       }
     end

@@ -1,21 +1,40 @@
-#!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 require 'arxutils'
-require 'everythingop/everythingop'
+require 'everythingop'
+require 'simpleoptparse'
 require 'pathname'
 
-dbconfig = Arxutils::Dbutil::DBCONFIG_MYSQL
-dbconfig = Arxutils::Dbutil::DBCONFIG_SQLITE3
+env = ENV['ENV']
+#env ||= "development"
+env ||= "production"
+
+opts = { db_dir: Arxutils::Dbutil::DB_DIR }
+banner = "Usage: bundle exec ruby exe/everythingop fname mode [--mysql|--sqlite3]"
+
+if ARGV.size > 1
+  fname = ARGV.shift 
+  mode = ARGV.shift.to_sym
+else
+  puts banner
+  exit 10
+end
+
+Simpleoptparse::Simpleoptparse.parse( ARGV , opts , banner , Everythingop::VERSION , nil ){ |parser|
+    parser.on('--mysql'  ) { |x| opts["dbconfig"] = Arxutils::Dbutil::DBCONFIG_MYSQL }
+    parser.on('--sqlite3'  ) { |x| opts["dbconfig"] = Arxutils::Dbutil::DBCONFIG_SQLITE3 }
+}
+
+opts["dbconfig"] = Arxutils::Dbutil::DBCONFIG_SQLITE3 unless opts["dbconfig"]
 
 hs = {
   "db_dir" => Arxutils::Dbutil::DB_DIR,
   "migrate_dir" => Arxutils::Dbutil::MIGRATE_DIR,
   "config_dir" => Arxutils::Dbutil::CONFIG_DIR,
-  "dbconfig" => dbconfig,
+  "dbconfig" => opts["dbconfig"],
+  "env" => env,
   "log_fname" => Arxutils::Dbutil::DATABASELOG,
+  "output_dir" => "output"
 }
-
-
 
 def pathname_test(pa)
   pa_escaped = pa
@@ -28,10 +47,8 @@ def pathname_test(pa)
   puts pn.file?
 end
 
-fname = ARGV[0]
-mode = ARGV[1].to_sym
-#fname = nil
-eto = Everythingop::Everythingop.new( :db, hs, fname )
+fname = nil
+eto = Everythingop::Everythingop.new( :db, hs, opts, fname )
 
 eto.set_mode( mode )
 eto.reset_hieritem_in_repo
