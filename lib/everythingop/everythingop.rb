@@ -8,29 +8,29 @@ require 'pp'
 require 'csv'
 
 module Everythingop
+  # Everything用操作クラス
   class Everythingop
     extend Forwardable
-    include Arxutils
-    
+
     def_delegator( :@hierop , :register , :register_categoryhier )
     def_delegator( :@hierop , :delete   , :unregister_categoryhier )
     def_delegator( :@hierop , :move     , :move_categoryhier )
 
     attr_reader :group , :group_v_ext2
 
-    def initialize( kind, hs , opts, fname = nil)
-      @hierop = HierOp.new( "hier", :hier , "hier" , Dbutil::Category , Dbutil::Categoryhier, Dbutil::Currentcategory, Dbutil::Invalidcategory )
+    def initialize( hs , opts, fname = nil)
+      @hierop = Arxutils::HierOp.new( "hier", :hier , "hier" , Dbutil::Category , Dbutil::Categoryhier, Dbutil::Currentcategory, Dbutil::Invalidcategory )
       @hieritem ||= Struct.new( "Hieritem" , :field_name, :hier_name , :base_asoc_name , :base_klass , :hier_klass, :cur_klass , :invalid_klass, :op_inst )
       @hieritem_ary = [
         @hieritem.new( "hier1item_id", :hier , "hier1item" , Dbutil::Hier1item , Dbutil::Hier1, Dbutil::Currenthier1item , Dbutil::Invalidhier1item),
         @hieritem.new( "hier2item_id", :hier , "hier2item" , Dbutil::Hier2item , Dbutil::Hier2, Dbutil::Currenthier2item , Dbutil::Invalidhier2item),
         @hieritem.new( "hier3item_id", :hier , "hier3item" , Dbutil::Hier3item , Dbutil::Hier3, Dbutil::Currenthier3item , Dbutil::Invalidhier3item)
       ]
-      @hieritem_ary.map{ |x| x.op_inst = HierOp.new( x.field_name, x.hier_name, x.base_asoc_name, x.base_klass , x.hier_klass, x.cur_klass, x.invalid_klass ) }
+      @hieritem_ary.map{ |x| x.op_inst = Arxutils::HierOp.new( x.field_name, x.hier_name, x.base_asoc_name, x.base_klass , x.hier_klass, x.cur_klass, x.invalid_klass ) }
       @hieritem_hs = @hieritem_ary.reduce({}){ |s,x|
       }
 
-      @tsg = TransactStateGroup.new( :category , :repo , :hier1item, :hier2item, :hier3item )
+      @tsg = Arxutils::TransactStateGroup.new( :category , :repo , :hier1item, :hier2item, :hier3item )
       if fname
         @fname = fname
         @lines = File.readlines( @fname ).map{|x| x.strip }.shift(3000)
@@ -38,9 +38,9 @@ module Everythingop
         @lines = get_lines.shift(3000)
       end
 
-      register_time = ::Arxutils::Dbutil::DbMgr.init( hs["db_dir"], hs["migrate_dir"] , hs["config_dir"], hs["dbconfig"] , hs["env"] , hs["log_fname"] , opts )
+      register_time = Arxutils::Dbutil::DbMgr.init( hs["db_dir"], hs["migrate_dir"] , hs["config_dir"], hs["dbconfig"] , hs["env"] , hs["log_fname"] , opts )
 
-      @dbmgr = ::Everythingop::Dbutil::EverythingopMgr.new( register_time )
+      @dbmgr = Dbutil::EverythingopMgr.new( register_time )
 
       @group = nil
       @group_criteria = nil

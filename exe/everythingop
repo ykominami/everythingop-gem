@@ -48,7 +48,7 @@ def pathname_test(pa)
 end
 
 fname = nil
-eto = Everythingop::Everythingop.new( :db, hs, opts, fname )
+eto = Everythingop::Everythingop.new( hs, opts, fname )
 
 eto.set_mode( mode )
 eto.reset_hieritem_in_repo
