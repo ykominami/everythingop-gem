@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'arxutils'
 require 'forwardable'
-require 'everythingop/relation'
 require 'everythingop/everythingop_init'
 require 'pathname'
 require 'pp'

@@ -1,0 +1,221 @@
+# -*- coding: utf-8 -*-
+
+require 'arxutils'
+require 'everythingop'
+require 'simpleoptparse'
+
+db_scheme_ary = [
+  {
+    :flist => %W!noitem!,
+    :classname => "Count",
+    :classname_downcase => "count",
+    :items => [
+              ["countdatetime" , "datetime", "false"],
+            ],
+    :plural => "counts"
+  },
+
+  {
+    :flist => %W!base invalid current!,
+    :classname => "Repo",
+    :classname_downcase => "repo",
+    :items => [
+              ["category_id" , "integer", "false"],
+              ["desc" , "string", "true"],
+              ["path" , "string", "false"],
+              ["mtime" , "integer", "false"],
+              ["ctime" , "integer", "false"],
+              ["hier1item_id" , "integer", "true"],
+              ["hier2item_id" , "integer", "true"],
+              ["hier3item_id" , "integer", "true"],
+              ["l1_id" , "integer", "true"],
+              ["l2_id" , "integer", "true"],
+              ["l3_id" , "integer", "true"],
+              ["f1" , "integer", "true"],
+              ["f2" , "integer", "true"],
+              ["f3" , "integer", "true"],
+              ["f3" , "integer", "true"],
+            ],
+    :plural => "repos"
+  },
+
+  {
+    :flist => %W!base invalid current!,
+    :classname => "Category",
+    :classname_downcase => "category",
+    :items => [
+              ["name" , "string", "false"],
+              ["path" , "string", "false"],
+              ["hier" , "string", "false"],
+              ["kind" , "integer", "false"],
+            ],
+    :plural => "categories"
+  },
+
+  {
+    :flist => %W!noitem!,
+    :classname => "Categoryhier",
+    :classname_downcase => "categoryhier",
+    :items => [
+              ["parent_id" , "integer", "false"],
+              ["child_id" , "integer", "true"],
+              ["level" , "integer", "false"],
+            ],
+    :plural => "categoryhiers"
+  },
+
+  {
+    :flist => %W!noitem!,
+    :classname => "L1",
+    :classname_downcase => "l1",
+    :items => [
+              ["name" , "string", "false"],
+              ["val" , "integer", "true"],
+            ],
+    :plural => "l1s"
+  },
+
+  {
+    :flist => %W!noitem!,
+    :classname => "L2",
+    :classname_downcase => "l2",
+    :items => [
+              ["name" , "string", "false"],
+              ["val" , "integer", "true"],
+            ],
+    :plural => "l2s"
+  },
+
+  {
+    :flist => %W!noitem!,
+    :classname => "L3",
+    :classname_downcase => "l3",
+    :items => [
+              ["name" , "string", "false"],
+              ["val" , "integer", "true"],
+            ],
+    :plural => "l3s"
+  },
+
+  {
+    :flist => %W!noitem!,
+    :classname => "Criteria",
+    :classname_downcase => "criteria",
+    :items => [
+              ["level" , "integer", "true"],
+              ["key" , "string", "false"],
+              ["value" , "string", "false"],
+            ],
+    :plural => "criteria"
+  },
+
+  {
+    :flist => %W!noitem!,
+    :classname => "Hier1",
+    :classname_downcase => "hier1",
+    :items => [
+              ["parent_id" , "integer", "false"],
+              ["child_id" , "integer", "false"],
+              ["level" , "integer", "false"],
+            ],
+    :plural => "hier1s"
+  },
+
+  {
+    :flist => %W!noitem!,
+    :classname => "Hier2",
+    :classname_downcase => "hier2",
+    :items => [
+              ["parent_id" , "integer", "false"],
+              ["child_id" , "integer", "false"],
+              ["level" , "integer", "false"],
+            ],
+    :plural => "hier2s"
+  },
+
+  {
+    :flist => %W!noitem!,
+    :classname => "Hier3",
+    :classname_downcase => "hier3",
+    :items => [
+              ["parent_id" , "integer", "false"],
+              ["child_id" , "integer", "false"],
+              ["level" , "integer", "false"],
+            ],
+    :plural => "hier3s"
+  },
+
+  {
+    :flist => %W!base invalid current!,
+    :classname => "Hier1item",
+    :classname_downcase => "hier1item",
+    :items => [
+              ["hier" , "string", "false"],
+            ],
+    :plural => "hier1items"
+  },
+
+  {
+    :flist => %W!base invalid current!,
+    :classname => "Hier2item",
+    :classname_downcase => "hier2item",
+    :items => [
+              ["hier" , "string", "false"],
+            ],
+    :plural => "hier2items"
+  },
+
+  {
+    :flist => %W!base invalid current!,
+    :classname => "Hier3item",
+    :classname_downcase => "hier3item",
+    :items => [
+              ["hier" , "string", "false"],
+            ],
+    :plural => "hier3items"
+  },
+
+
+]
+
+opts = {
+  db_dir: Arxutils::Dbutil::DB_DIR ,
+  relation: {
+    module: ["Everythingop" , "Dbutil"],
+    filename: "dbrelation.rb",
+    dir: "lib/everythingop/dbutil"
+  }
+}
+banner = "Usage: bundle exec ruby exe/makemigrate [--makeconfig|--remigrate|--mysql|--sqlite3]"
+
+Simpleoptparse::Simpleoptparse.parse( ARGV , opts , banner , Everythingop::VERSION , nil ){ |parser|
+  parser.on('-c','--makeconfig'  ) { |x| opts["makeconfig"] = true }
+  parser.on('-r','--remigrate'  ) { |x| opts["remigrate"] = true }
+  parser.on('--mysql'  ) { |x| opts["dbconfig"] = Arxutils::Dbutil::DBCONFIG_MYSQL }
+  parser.on('--sqlite3'  ) { |x| opts["dbconfig"] = Arxutils::Dbutil::DBCONFIG_SQLITE3 }
+}
+opts["makeconfig"] = !opts["makeconfig"].nil?
+opts["remigrate"] = !opts["remigrate"].nil?
+
+opts["dbconfig"] = Arxutils::Dbutil::DBCONFIG_SQLITE3 unless opts["dbconfig"]
+
+env = ENV['ENV']
+#env ||= "development"
+env ||= "production"
+
+#=begin
+#p db_scheme_ary
+#p opts
+#exit 0
+#=end
+
+Arxutils::Migrate.migrate(
+                          Arxutils::Dbutil::DB_DIR,
+                          Arxutils::Dbutil::CONFIG_DIR,
+                          Arxutils::Dbutil::DATABASELOG,
+                          Arxutils::Dbutil::MIGRATE_DIR,
+                          env,
+                          db_scheme_ary,
+                          opts["dbconfig"],
+                          opts,
+                          )
