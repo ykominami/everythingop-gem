@@ -41,11 +41,7 @@ module Everythingop
       register_time = ::Arxutils::Dbutil::DbMgr.init( hs["db_dir"], hs["migrate_dir"] , hs["config_dir"], hs["dbconfig"] , hs["env"] , hs["log_fname"] , opts )
 
       @dbmgr = ::Everythingop::Dbutil::EverythingopMgr.new( register_time )
-=begin
-      Store.init( kind , hs ){ | register_time |
-        @count = Dbutil::Count.create( countdatetime: register_time )
-      }
-=end
+
       @group = nil
       @group_criteria = nil
       @group_criteria_external = nil
