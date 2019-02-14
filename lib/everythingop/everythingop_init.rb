@@ -2,6 +2,7 @@
 
 module Everythingop
     class Everythingop
+      # 変数初期化
       def variable_init
         @group_criteria = {
           %s!/git-sdk-64! => %q!C:\git-sdk-64!,
