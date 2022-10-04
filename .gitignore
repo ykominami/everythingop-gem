@@ -1,3 +1,4 @@
+.gitignore
 /.bundle/
 /.yardoc
 /Gemfile.lock
@@ -55,10 +56,13 @@
 /exe/dbbk2
 /run_makemigrate.bat
 /run.bat
-/config
 /sql
 /txt
 /vendor
 /exe/everythingop-cl
 /exe/everythingop-cl2
 /lib/everythingop/x-everythingor.rb
+.ruby-version
+Rakefile.*
+*.code-workspace
+

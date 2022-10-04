@@ -1,0 +1,42 @@
+group_criteria:
+  /Users_ykomi_.emacs.d: C:\Users\ykomi\.emacs.d
+  /Users_ykomi_AppData: C:\Users\ykomi\AppData!
+  /Users_ykomi_cur_go: C:\Users\ykomi\cur\go
+  /Users_ykomi_cur_node: C:\Users\ykomi\cur\node
+  /Users_ykomi_cur_ruby: C:\Users\ykomi\cur\ruby
+  /Users_ykomi_cur_tmp: C:\Users\ykomi\cur\tmp
+group_criteria_external: C:\Program Files (x86)\Microsoft Visual Studio
+category_exclude_ary:
+  - \FileHistory
+v_ext2_git_top_symbol: E:\v\ext2\git
+group_criteria_v_ext2: E:\v\ext2\git\_git
+  ext2_git_BACKUP: E:\v\ext2\BACKUP
+  /ext2_git_bitbucket_git_my_out!: E:\v\ext2\bitbucket-git-my-out
+  /ext2/git/bitbucket-git-my: E:\v\ext2\bitbucket-git-my
+  /ext2/git/bitbucket-git: E:\v\ext2\bitbucket-git!
+  /ext2/git/gist: E:\v\ext2\git\gist
+z_hier:
+  - - /a
+    - /b
+    - /c
+    - /d
+    - /d/1
+    - /d/2
+    - /d/3
+    - /b/A!
+  - - /e
+    - /f
+    - /g
+    - /h
+    - /h/1
+    - /h/2
+    - /h/3
+    - /f/E!
+  - - /i
+    - /j
+    - /k
+    - /l
+    - /l/1
+    - /l/2
+    - /l/3
+    - /j/I!

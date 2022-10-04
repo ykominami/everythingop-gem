@@ -1,29 +1,28 @@
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
 require 'arxutils'
 require 'everythingop/everythingop'
 require 'pathname'
 require 'sinatra'
 
 configure do
-#    set :public_folder, File.dirname(__FILE__) + '/public'
+  #    set :public_folder, File.dirname(__FILE__) + '/public'
 end
 
 before do
-  dbconfig = Arxutils::Dbutil::DBCONFIG_MYSQL
+  # dbconfig = Arxutils::Dbutil::DBCONFIG_MYSQL
   dbconfig = Arxutils::Dbutil::DBCONFIG_SQLITE3
-  
+
   hs = {
-    "db_dir" => Arxutils::Dbutil::DB_DIR,
-    "migrate_dir" => Arxutils::Dbutil::MIGRATE_DIR,
-    "config_dir" => Arxutils::Dbutil::CONFIG_DIR,
-    "dbconfig" => dbconfig,
-    "log_fname" => Arxutils::Dbutil::DATABASELOG,
+    'db_dir' => Arxutils::Dbutil::DB_DIR,
+    'migrate_dir' => Arxutils::Dbutil::MIGRATE_DIR,
+    'config_dir' => Arxutils::Dbutil::CONFIG_DIR,
+    'dbconfig' => dbconfig,
+    'log_fname' => Arxutils::Dbutil::DATABASELOG
   }
   fname = ARGV[0]
   @mode = ARGV[1].to_sym
-  @eto = Everythingop::Everythingop.new( :db, hs, fname )
-  @eto.set_mode( @mode )
+  @eto = Everythingop::Everythingop.new(:db, hs, fname)
+  @eto.set_mode(@mode)
 end
 
 get '/' do
@@ -36,13 +35,13 @@ end
 
 get '/jsonData5.json' do
   data = @eto.get_category_hier_jsondata
-  headers "Content-Type" => "application/json"
+  headers 'Content-Type' => 'application/json'
   data
 end
 
 get '/category' do
-  "category"
-  #eto.list_category
+  'category'
+  # eto.list_category
 end
 
 get '/repo' do

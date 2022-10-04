@@ -1,0 +1,251 @@
+---
+- :flist:
+    - noitem
+  :classname: Countdatetime
+  :classname_downcase: countdatetime
+  :items:
+    - - countdatetime
+      - datetime
+      - 'false'
+  :plural: countdatetimes
+  :ar_version: 6.0
+- :flist:
+    - noitem
+    - invalid
+    - current
+  :classname: Repo
+  :classname_downcase: repo
+  :items:
+    - - category_id
+      - integer
+      - 'false'
+    - - desc
+      - string
+      - 'true'
+    - - path
+      - string
+      - 'false'
+    - - mtime
+      - integer
+      - 'false'
+    - - ctime
+      - integer
+      - 'false'
+    - - hier1item_id
+      - integer
+      - 'true'
+    - - hier2item_id
+      - integer
+      - 'true'
+    - - hier3item_id
+      - integer
+      - 'true'
+    - - l1_id
+      - integer
+      - 'true'
+    - - l2_id
+      - integer
+      - 'true'
+    - - l3_id
+      - integer
+      - 'true'
+    - - f1
+      - integer
+      - 'true'
+    - - f2
+      - integer
+      - 'true'
+    - - f3
+      - integer
+      - 'true'
+  :plural: repos
+  :ar_version: 6.0
+- :flist:
+    - noitem
+    - invalid
+    - current
+  :classname: Category
+  :classname_downcase: category
+  :items:
+    - - name
+      - string
+      - 'false'
+    - - path
+      - string
+      - 'false'
+    - - hier
+      - string
+      - 'false'
+    - - kind
+      - integer
+      - 'false'
+  :plural: categories
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+    - invalid
+    - current
+  :classname: Categoryhier
+  :classname_downcase: categoryhier
+  :items:
+    - - parent_id
+      - integer
+      - 'false'
+    - - child_id
+      - integer
+      - 'true'
+    - - level
+      - integer
+      - 'false'
+  :plural: categoryhiers
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+  :classname: L1
+  :classname_downcase: l1
+  :items:
+    - - name
+      - string
+      - 'false'
+    - - val
+      - integer
+      - 'true'
+  :plural: l1s
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+  :classname: L2
+  :classname_downcase: l2
+  :items:
+    - - name
+      - string
+      - 'false'
+    - - val
+      - integer
+      - 'true'
+  :plural: l2s
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+  :classname: L3
+  :classname_downcase: l3
+  :items:
+    - - name
+      - string
+      - 'false'
+    - - val
+      - integer
+      - 'true'
+  :plural: l3s
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+  :classname: Criteria
+  :classname_downcase: criteria
+  :items:
+    - - level
+      - integer
+      - 'true'
+    - - key
+      - string
+      - 'false'
+    - - value
+      - string
+      - 'false'
+  :plural: criterias
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+  :classname: Hier1
+  :classname_downcase: hier1
+  :items:
+    - - parent_id
+      - integer
+      - 'false'
+    - - child_id
+      - integer
+      - 'true'
+    - - level
+      - integer
+      - 'false'
+  :plural: hier1s
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+  :classname: Hier2
+  :classname_downcase: hier2
+  :items:
+    - - parent_id
+      - integer
+      - 'false'
+    - - child_id
+      - integer
+      - 'true'
+    - - level
+      - integer
+      - 'false'
+  :plural: hier2s
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+  :classname: Hier3
+  :classname_downcase: hier3
+  :items:
+    - - parent_id
+      - integer
+      - 'false'
+    - - child_id
+      - integer
+      - 'true'
+    - - level
+      - integer
+      - 'false'
+  :plural: hieres
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+    - invalid
+    - current
+  :classname: Hier1item
+  :classname_downcase: hier1item
+  :items:
+    - - hier
+      - string
+      - 'false'
+  :plural: hier1items
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+    - invalid
+    - current
+  :classname: Hier2item
+  :classname_downcase: hier2item
+  :items:
+    - - hier
+      - string
+      - 'false'
+  :plural: hier2items
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+    - invalid
+    - current
+  :classname: Hier3item
+  :classname_downcase: hier3item
+  :items:
+    - - hier
+      - string
+      - 'false'
+  :plural: hier3items
+  :ar_version: 6.0

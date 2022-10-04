@@ -1,0 +1,21 @@
+C:\acl10.1express\examples\jlinker\javabean\run.bat
+C:\acl10.1express\examples\jlinker\servlet\run.bat
+C:\OCaml64\home\ykomi\dotfiles\win\bat1\run.bat
+C:\Program Files\Go\src\run.bat
+C:\Users\ykomi\bat1\run.bat
+E:\V\ext3\ghq\src\github.com\golang\go\src\run.bat
+E:\V\ext3\ghq\src\github.com\QQuick\Transcrypt\transcrypt\development\automated_tests\transcrypt\run.bat
+E:\V\ext3\ghq\src\github.com\QQuick\Transcrypt\transcrypt\development\manual_tests\import_export_aliases\run.bat
+E:\V\ext3\ghq\src\github.com\vygr\ChrysaLisp\run.bat
+E:\X\CondaEnvs\rstudio\lib\R\library\rJava\jri\run.bat
+Z:\BACKUP\Bochs-2.3.7\run.bat
+Z:\BACKUP\Bochs-2.6.8\run.bat
+Z:\BACKUP\cygwin64\home\ykomi\dotfiles\win\bat1\run.bat
+Z:\BACKUP\ykomi-202008\cur\ruby\_extract\_archive\enop\run.bat
+Z:\BACKUP\ykomi-202008\cur\ruby\_extract\_archive\feedlrop\run.bat
+Z:\BACKUP\ykomi-202008\cur\ruby\_extract\everythingop-gem\everythingop\run.bat
+Z:\BACKUP\ykomi-202008\cur\ruby\_extract\feedlrop-gem\feedlrop\run.bat
+Z:\BACKUP\ykomi-202008\cur\ruby\_extract\flist-gem\flist\run.bat
+Z:\BACKUP\ykomi-202008\cur\ruby\amazon-ecs-test\run.bat
+Z:\BACKUP\ykomi-202008\cur\ruby\efu-gem\efu\run.bat
+Z:\BACKUP\ykomi-202008\cur\ruby\enop-gem\enop\run.bat

@@ -1,9 +1,28 @@
-source 'https://rubygems.org'
+# frozen_string_literal: true
 
-# Specify your gem's dependencies in evrythingop.gemspec
+source 'https://rubygems.org'
+# Specify your gem's dependencies in enop.gemspec
 gemspec
 
-#gem 'arxutils', :path => 'C:\Users\ykomi\cur\ruby\arxutils-gem\arxutils'
-#gem 'rugged', git: 'git://github.com/libgit2/rugged.git', submodules: true
-#gem 'railties'
-#gem "simpleoptparse", :path => 'c:/Users/ykomi/cur/ruby/simpleoptparse-gem/simpleoptparse2'
+gem 'bundler'
+gem 'rake', '~> 13.0'
+gem 'rugged'
+gem 'sinatra'
+
+gem 'arxutils_sqlite3'
+gem 'encx'
+gem 'simpleoptparse'
+gem 'ykutils'
+gem 'ykxutils'
+
+group :test, optional: true do
+  gem 'rspec', '~> 3.0'
+  gem 'rspec_junit_formatter'
+  gem 'rubocop', '~> 1.21'
+  gem 'rubocop-rake'
+  gem 'rubocop-rspec'
+end
+
+group :development do
+  gem 'yard'
+end
