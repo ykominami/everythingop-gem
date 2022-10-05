@@ -25,31 +25,7 @@ RSpec.describe Everythingop do
       # cli.startup
       # eto = cli.cli_eto
       # カレントのリポジトリの一覧
-      expect(cli.cli_f).to be_nil
-    end
-
-    it 'simple2', cmd: :s2 do
-      cli = Everythingop::Cli.new(args_f)
-      cli.startup
-      eto = cli.cli_eto
-      eto.listup_x('simple2')
-      expect(eto.list_a).to be_nil
-    end
-
-    it 'simple3', cmd: :s3 do
-      cli = Everythingop::Cli.new(args_f)
-      cli.startup
-      eto = cli.cli_eto
-      eto.listup_x('simple3')
-      expect(eto.list_a).to be_nil
-    end
-
-    it 'repo', cmd: :r do
-      cli = Everythingop::Cli.new(args_s)
-      cli.startup
-      eto = cli.cli_eto
-      eto.listup_x('repo')
-      expect(eto.list_a).to be_nil
+      expect(cli.cli_f).not_to be_nil
     end
   end
 end

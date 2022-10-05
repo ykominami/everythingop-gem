@@ -7,6 +7,8 @@ require 'encx'
 module Everythingop
   module Dbutil
     class EverythingopMgr
+      attr_reader :ct
+
       extend Forwardable
 
       def_delegator(:@dirzmgr, :add, :dirz_add)

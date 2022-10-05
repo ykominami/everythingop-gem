@@ -76,9 +76,6 @@
     - - hier
       - string
       - 'false'
-    - - kind
-      - integer
-      - 'false'
   :plural: categories
   :ar_version: 6.0
 
@@ -99,6 +96,23 @@
       - integer
       - 'false'
   :plural: categoryhiers
+  :ar_version: 6.0
+
+- :flist:
+    - noitem
+  :classname: Criteria
+  :classname_downcase: criteria
+  :items:
+    - - level
+      - integer
+      - 'false'
+    - - key
+      - string
+      - 'false'
+    - - value
+      - string
+      - 'false'
+  :plural: criteria
   :ar_version: 6.0
 
 - :flist:
@@ -141,23 +155,6 @@
       - integer
       - 'true'
   :plural: l3s
-  :ar_version: 6.0
-
-- :flist:
-    - noitem
-  :classname: Criteria
-  :classname_downcase: criteria
-  :items:
-    - - level
-      - integer
-      - 'true'
-    - - key
-      - string
-      - 'false'
-    - - value
-      - string
-      - 'false'
-  :plural: criterias
   :ar_version: 6.0
 
 - :flist:

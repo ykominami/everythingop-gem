@@ -82,7 +82,7 @@ module Everythingop
         puts '################ cli_f MIXED_MODE TRACE_MODE 2'
 
         # 分類基準の復元
-        restore_criteria(group_criteria, level)
+        eto.reorder_category
       else
         puts '################ cli_f ELSE'
         # no op

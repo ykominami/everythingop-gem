@@ -9,4 +9,5 @@ group_criteria_external: /mnt/c/Program Files (x86)/Microsoft Visual Studio
 category_exclude_ary:
   - /FileHistory
 v_ext2_git_top_symbol: /mnt/e/v/ext2/git
-group_criteria_v_ext2: /mnt/e/v/ext2/git/_git
+group_criteria_v_ext2:
+  /ext2_git_bitbucket_git_my_out!: /mnt/e/v/ext2/bitbucket-git-my-out

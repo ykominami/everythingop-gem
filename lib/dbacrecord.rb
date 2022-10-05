@@ -48,6 +48,9 @@ module Dbutil
     belongs_to :categoryhier, foreign_key: 'org_id'
   end
 
+  class Criteria < ActiveRecord::Base
+  end
+
   class L1 < ActiveRecord::Base
   end
 
@@ -55,9 +58,6 @@ module Dbutil
   end
 
   class L3 < ActiveRecord::Base
-  end
-
-  class Criteria < ActiveRecord::Base
   end
 
   class Hier1 < ActiveRecord::Base

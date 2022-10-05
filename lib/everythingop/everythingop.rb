@@ -21,8 +21,6 @@ module Everythingop
     # グループv_ext2
     attr_reader :group_v_ext2
 
-    # カテゴリクラスに対する階層操作
-    @hierop = Arxutils_Sqlite3::HierOp.new('hier', :hier, 'hier', Dbutil::Category, Dbutil::Categoryhier, Dbutil::Currentcategory, Dbutil::Invalidcategory)
     # 階層を表すアイテムクラス
     @hieritem = Struct.new(:field_name, :hier_symbol, :base_asoc_name, :base_klass, :hier_klass, :cur_klass, :invalid_klass, :op_inst)
     # 階層を表すアイテム配列
@@ -54,6 +52,15 @@ module Everythingop
       # トランザクショングループ作成
       @tsg = setup_for_transact_state_group(infname)
       setup_for_db(hash)
+
+      # カテゴリクラスに対する階層操作
+      @hierop = Arxutils_Sqlite3::HierOp.new('hier', :hier, 'hier', Dbutil::Category,
+                                             Dbutil::Categoryhier, Dbutil::Currentcategory,
+                                             Dbutil::Invalidcategory)
+      puts "init @hierop.base_klass=#{@hierop.base_klass}"
+      puts "init @hierop.hier_klass=#{@hierop.hier_klass}"
+      puts "init @hierop.current_klass=#{@hierop.current_klass}"
+      puts "init @hierop.invalid_klass=#{@hierop.invalid_klass}"
     end
 
     # グループ分類情報設定
@@ -126,6 +133,7 @@ module Everythingop
       register_time = dbconnect.connect
       # 保存用DBマネージャ
       @dbmgr = Dbutil::EverythingopMgr.new(register_time)
+      @count = @dbmgr.ct
     end
 
     # トランザクションモード設定
@@ -189,7 +197,12 @@ module Everythingop
       hs_count = Dbutil::Categoryhier.group(:parent_id).count(:parent_id)
 
       category_hs_by_parent_id = hs_count.keys.each_with_object({}) do |x, hs|
-        hs[x] = Dbutil::Category.find(Dbutil::Categoryhier.where(parent_id: x).pluck(:child_id))
+        ids = Dbutil::Categoryhier.where(parent_id: x).pluck(:child_id)
+        ids.each do |idx|
+          hs[x] = Dbutil::Category.find(idx)
+        rescue ActiveRecord::RecordNotFound => e
+          puts e.message
+        end
       end
 
       # parent_idが0のもの
@@ -509,13 +522,13 @@ module Everythingop
     def ensure_invalid
       invalid_ids = Dbutil::Currentrepo.pluck(:org_id) - @tsg.repo.ids
       invalid_ids.map do |x|
-        Dbutil::Invalidrepo.create(org_id: x, count_id: @count.id)
+        Dbutil::Invalidrepo.create(org_id: x, count_id: @count.id, end_datetime: @count.countdatetime)
       end
 
       invalid_ids = Dbutil::Currentcategory.pluck(:org_id) - @tsg.category.ids
       invalid_ids.map do |x|
-        Dbutil::Invalidcategory.create(org_id: x, count_id: @count.id)
-        unregister_category(Category.find(x).hier)
+        Dbutil::Invalidcategory.create(org_id: x, count_id: @count.id, end_datetime: @count.countdatetime)
+        unregister_categoryhier(Dbutil::Category.find(x).hier)
       end
     end
 
