@@ -1,5 +1,4 @@
 .rspec_status
-.gitignore
 /.bundle/
 /.yardoc
 /_yardoc/
@@ -62,7 +61,6 @@
 /exe/everythingop-cl
 /exe/everythingop-cl2
 /lib/everythingop/x-everythingor.rb
-.ruby-version
 Rakefile.*
 *.code-workspace
 
