@@ -4,6 +4,7 @@ IFS=$'\n\t'
 set -vx
 
 bundle config path --local vencor/bundle
+bundle config with --local test
 bundle install
 bundle exec rake arx:bootstrap
 
