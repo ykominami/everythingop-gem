@@ -3,8 +3,8 @@ set -euo pipefail
 IFS=$'\n\t'
 set -vx
 
-bundle config path --local vendor/bundle
-bundle config with --local test
+# bundle config path --local vendor/bundle
+# bundle config with --local test
 bundle install
 bundle exec rake arx:bootstrap
 
