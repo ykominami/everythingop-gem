@@ -104,6 +104,5 @@ module Dbutil
   class Currenthier3item < ActiveRecord::Base
     belongs_to :hier3item, foreign_key: 'org_id'
   end
-
 end
 end

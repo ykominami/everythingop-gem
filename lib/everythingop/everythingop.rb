@@ -107,10 +107,7 @@ module Everythingop
       # トランザクショングループ化したい情報を持つファイルのファイル名
       # @fname = fname
       # トランザクショングループ化したい情報の配列
-      puts('#### Everythingop::Everythingop.new =1')
       @lines = File.readlines(infile).map(&:strip).shift(300)
-      puts("@lines.size=#{@lines.size}")
-      puts('#### Everythingop::Everythingop.new =2')
       # pp @lines
 
       tsg

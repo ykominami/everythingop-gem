@@ -64,27 +64,21 @@ module Everythingop
     end
 
     def cli_f
-      puts '################ cli_f 1'
       # eto = Everythingop::Everythingop.new( hash, @infile )
       eto = cli_eto
-      puts '################ cli_f 2'
 
       eto.set_mode(@mode)
-      puts '################ cli_f 3'
       eto.reset_hieritem_in_repo
-      puts "################ cli_f 4 @mode=#{@mode}"
       # puts mode
       case @mode
       when :MIXED_MODE, :TRACE_MODE
         puts '== ensure_invalid'
-        puts '################ cli_f MIXED_MODE TRACE_MODE 1'
         eto.ensure_invalid
-        puts '################ cli_f MIXED_MODE TRACE_MODE 2'
 
         # 分類基準の復元
         eto.reorder_category
       else
-        puts '################ cli_f ELSE'
+        puts 'no op'
         # no op
       end
     end

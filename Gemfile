@@ -23,6 +23,6 @@ group :test, optional: true do
   gem 'rubocop-rspec'
 end
 
-group :development do
-  gem 'yard'
-end
+# group :development do
+#  gem 'yard'
+# end

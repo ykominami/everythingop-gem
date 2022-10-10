@@ -108,9 +108,6 @@ GEM
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.3.0)
-    webrick (1.7.0)
-    yard (0.9.28)
-      webrick (~> 1.7.0)
     ykutils (0.1.7)
       erubi
       filex
@@ -135,7 +132,6 @@ DEPENDENCIES
   rugged
   simpleoptparse
   sinatra
-  yard
   ykutils
   ykxutils
 
