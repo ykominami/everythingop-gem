@@ -1,7 +1,7 @@
 .ruby-version
+.rspec_status
 /.bundle/
 /.yardoc
-/Gemfile.lock
 /_yardoc/
 /coverage/
 /doc/
@@ -56,10 +56,12 @@
 /exe/dbbk2
 /run_makemigrate.bat
 /run.bat
-/config
 /sql
 /txt
 /vendor
 /exe/everythingop-cl
 /exe/everythingop-cl2
 /lib/everythingop/x-everythingor.rb
+Rakefile.*
+*.code-workspace
+

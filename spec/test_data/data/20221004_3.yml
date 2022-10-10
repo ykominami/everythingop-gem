@@ -1,0 +1,13 @@
+group_criteria:
+  /Users_ykomi_.emacs.d: /mnt/c/Users/ykomi/.emacs.d
+  /Users_ykomi_AppData: /mnt/c/Users/ykomi/AppData!
+  /Users_ykomi_cur_go: /mnt/c/Users/ykomi/cur/go
+  /Users_ykomi_cur_nod: /mnt/e /mnt/c/Users/ykomi/cur/node
+  /Users_ykomi_cur_ruby: /mnt/c/Users/ykomi/cur/ruby
+  /Users_ykomi_cur_tmp: /mnt/c/Users/ykomi/cur/tmp
+group_criteria_external: /mnt/c/Program Files (x86)/Microsoft Visual Studio
+category_exclude_ary:
+  - /FileHistory
+v_ext2_git_top_symbol: /mnt/e/v/ext2/git
+group_criteria_v_ext2:
+  /ext2_git_bitbucket_git_my_out!: /mnt/e/v/ext2/bitbucket-git-my-out

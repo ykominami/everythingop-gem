@@ -1,0 +1,26 @@
+require 'everythingop'
+require_relative "everythingop/everythingop_init"
+require 'pstore'
+require 'ykxutils'
+require 'arxutils_sqlite3'
+require 'simpleoptparse'
+
+require 'pathname'
+
+module Everythingop
+    class Everythingopwin
+      def get_linesx
+      end
+      # everythingから.gitのパス一覧を得る
+      def get_lines
+        # TODO: 期待した通りに動かない
+        ary = []
+        io = IO.popen( %q!es -w -r "\.git$"!, "r")
+        while l=io.gets
+          ary << l.strip
+        end
+        ary
+      end
+    end
+  end
+end

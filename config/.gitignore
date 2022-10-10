@@ -1,0 +1,10 @@
+*
+!setting.yml
+!db_scheme.yml
+!opts.rb         
+!setting.yml   
+!sqlite3.yml
+!dbsetup.rb
+#
+!.gitignore
+

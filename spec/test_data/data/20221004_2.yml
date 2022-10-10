@@ -1,0 +1,12 @@
+group_criteria:
+  /Users_ykomi_.emacs.d: C:\Users\ykomi\.emacs.d
+  /Users_ykomi_AppData: C:\Users\ykomi\AppData!
+  /Users_ykomi_cur_go: C:\Users\ykomi\cur\go
+  /Users_ykomi_cur_node: C:\Users\ykomi\cur\node
+  /Users_ykomi_cur_ruby: C:\Users\ykomi\cur\ruby
+  /Users_ykomi_cur_tmp: C:\Users\ykomi\cur\tmp
+group_criteria_external: C:\Program Files (x86)\Microsoft Visual Studio
+category_exclude_ary:
+  - \FileHistory
+v_ext2_git_top_symbol: E:\v\ext2\git
+group_criteria_v_ext2: E:\v\ext2\git\_git

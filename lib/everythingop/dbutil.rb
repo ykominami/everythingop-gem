@@ -1,2 +1,1 @@
-require 'everythingop/dbutil/dbrelation'
-require 'everythingop/dbutil/everythingopmgr'
+require_relative 'dbutil/everythingopmgr'
