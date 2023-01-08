@@ -7,7 +7,7 @@ gemspec
 gem 'bundler'
 gem 'rake', '~> 13.0'
 gem 'rugged'
-gem 'sinatra'
+gem 'sinatra', '~> 3.0.4'
 
 gem 'arxutils_sqlite3'
 gem 'encx'
