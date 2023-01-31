@@ -15,12 +15,12 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (6.1.7)
-      activesupport (= 6.1.7)
-    activerecord (6.1.7)
-      activemodel (= 6.1.7)
-      activesupport (= 6.1.7)
-    activesupport (6.1.7)
+    activemodel (6.1.7.2)
+      activesupport (= 6.1.7.2)
+    activerecord (6.1.7.2)
+      activemodel (= 6.1.7.2)
+      activesupport (= 6.1.7.2)
+    activesupport (6.1.7.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -36,7 +36,7 @@ GEM
       ykutils
       ykxutils
     ast (2.4.2)
-    concurrent-ruby (1.1.10)
+    concurrent-ruby (1.2.0)
     diff-lcs (1.5.0)
     encx (0.1.4)
     erubi (1.12.0)
@@ -105,7 +105,7 @@ GEM
       tilt (~> 2.0)
     sqlite3 (1.5.4-x86_64-linux)
     tilt (2.0.11)
-    tzinfo (2.0.5)
+    tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.4.2)
     ykutils (0.1.7)
