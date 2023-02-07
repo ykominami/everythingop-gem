@@ -26,3 +26,6 @@ end
 # group :development do
 #  gem 'yard'
 # end
+
+gem "activerecord", "~> 6.1.7.1"
+
