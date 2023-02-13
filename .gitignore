@@ -1,4 +1,5 @@
 .ruby-version
+/vendor/
 .rspec_status
 /.bundle/
 /.yardoc
