@@ -28,4 +28,4 @@ end
 # end
 
 gem "activerecord", "~> 6.1.7.1"
-
+gem "rack", "~> 2.2.6.1"

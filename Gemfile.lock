@@ -50,13 +50,14 @@ GEM
       concurrent-ruby (~> 1.0)
     json (2.6.3)
     messagex (0.1.5)
+    mini_portile2 (2.8.1)
     minitest (5.17.0)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
     parallel (1.22.1)
     parser (3.2.0.0)
       ast (~> 2.4.1)
-    rack (2.2.5)
+    rack (2.2.6.4)
     rack-protection (3.0.5)
       rack
     rainbow (3.1.1)
@@ -103,7 +104,8 @@ GEM
       rack (~> 2.2, >= 2.2.4)
       rack-protection (= 3.0.5)
       tilt (~> 2.0)
-    sqlite3 (1.5.4-x86_64-linux)
+    sqlite3 (1.5.4)
+      mini_portile2 (~> 2.8.0)
     tilt (2.0.11)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
@@ -128,6 +130,7 @@ DEPENDENCIES
   bundler
   encx
   everythingop!
+  rack (~> 2.2.6.1)
   rake (~> 13.0)
   rspec (~> 3.0)
   rspec_junit_formatter
