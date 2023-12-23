@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'bundler'
-gem 'rake', '~> 13.0'
+gem 'rake', '~> 13.1'
 gem 'rugged'
 gem 'sinatra', '~> 3.0.4'
 
