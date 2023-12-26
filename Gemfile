@@ -27,5 +27,5 @@ end
 #  gem 'yard'
 # end
 
-gem "activerecord", "~> 6.1.7.1"
-gem "rack", "~> 2.2.8"
+gem "activerecord", "~> 6.1.7.6"
+gem "rack", "~> 2.2.6.1"
