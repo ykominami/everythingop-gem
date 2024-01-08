@@ -18,7 +18,7 @@ gem 'ykxutils'
 group :test, optional: true do
   gem 'rspec', '~> 3.0'
   gem 'rspec_junit_formatter'
-  gem 'rubocop', '~> 1.21'
+  gem 'rubocop', '~> 1.59'
   gem 'rubocop-rake'
   gem 'rubocop-rspec'
 end
