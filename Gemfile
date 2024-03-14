@@ -15,6 +15,7 @@ gem 'simpleoptparse'
 gem 'ykutils'
 gem 'ykxutils'
 
+
 group :test, optional: true do
   gem 'rspec', '~> 3.0'
   gem 'rspec_junit_formatter'
@@ -28,4 +29,4 @@ end
 # end
 
 gem "activerecord", "~> 6.1.7.6"
-gem "rack", "~> 2.2.6.1"
+gem 'rack', '~> 2.2.8.1'
